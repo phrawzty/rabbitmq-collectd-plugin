@@ -1,0 +1,26 @@
+This is a rudimentary RabbitMQ plugin for Collectd.  It is written in Python, and thus requires the use of the Python plugin for Collectd.
+
+It will accept 4 options from the Collectd plugin configuration :
+
+    Locations of binaries:
+    RmqcBin = /usr/sbin/rabbitmqctl
+    PmapBin = /usr/bin/pmap
+    PidofBin = /bin/pidof
+
+    Logging:
+    Verbose = False
+
+It will attempt to gather the following information:
+
+    From rabbitmqctl list_queues:
+    messages
+    memory
+    consumser
+
+    From pmap of beam.smp:
+    memory mapped
+    memory writeable/private (used)
+    memory shared
+
+Props to Garret Heaton for inspiration and conceptial guidance from his redis-collectd-plugin.
+    https://github.com/powdahound/redis-collectd-plugin
