@@ -131,12 +131,11 @@ def logger(t, msg):
         collectd.error('%s: %s' % (NAME, msg))
     if t == 'warn':
         collectd.warning('%s: %s' % (NAME, msg))
-    elif t == 'verb' and VERBOSE_LOGGING:
+    elif t == 'verb' and VERBOSE_LOGGING == True:
         collectd.info('%s: %s' % (NAME, msg))
-    else:
-        collectd.notice('%s: %s' % (NAME, msg))
 
 
 # Runtime
 collectd.register_config(configure_callback)
+collectd.warning('Initialising rabbitmq_info')
 collectd.register_read(read_callback)
