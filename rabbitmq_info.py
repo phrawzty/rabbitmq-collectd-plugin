@@ -35,7 +35,7 @@ def get_stats():
 
     # call rabbitmqctl
     try:
-        p = subprocess.Popen([RABBITMQCTL_BIN, 'list_queues', 'messages', 'memory', 'consumers'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen([RABBITMQCTL_BIN, '-q', 'list_queues', 'messages', 'memory', 'consumers'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     except:
         logger('err', 'Failed to run %s' % RABBITMQCTL_BIN)
         return None
