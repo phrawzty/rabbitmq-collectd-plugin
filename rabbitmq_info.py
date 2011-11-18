@@ -26,28 +26,33 @@ VERBOSE_LOGGING = False
 # Obtain the interesting statistical info
 def get_stats():
     stats = {}
-    stats['ctl_messages'] = 0
-    stats['ctl_memory'] = 0
-    stats['ctl_consumers'] = 0
+    # Init to 0 so we can += later.
+    stats['total_messages'] = 0
+    stats['total_memory'] = 0
+    stats['total_consumers'] = 0
     stats['pmap_mapped'] = 0
     stats['pmap_used'] = 0
     stats['pmap_shared'] = 0
 
     # call rabbitmqctl
     try:
-        p = subprocess.Popen([RABBITMQCTL_BIN, 'list_queues', 'messages', 'memory', 'consumers'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen([RABBITMQCTL_BIN, '-q', 'list_queues', 'name', 'messages', 'memory', 'consumers'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     except:
         logger('err', 'Failed to run %s' % RABBITMQCTL_BIN)
         return None
 
     for line in p.stdout.readlines():
-        if re.match('\d', line):
-            ctl_stats = line.split()
-            stats['ctl_messages'] += int(ctl_stats[0])
-            stats['ctl_memory'] += int(ctl_stats[1])
-            stats['ctl_consumers'] += int(ctl_stats[2])
+          ctl_stats = line.split()
+          # Metrics for the individual queue
+          stats[ctl_stats[0] + '_messages'] = int(ctl_stats[1])
+          stats[ctl_stats[0] + '_memory'] = int(ctl_stats[2])
+          stats[ctl_stats[0] + '_consumers'] = int(ctl_stats[3])
+          # Append to the totals
+          stats['total_messages'] += int(ctl_stats[1])
+          stats['total_memory'] += int(ctl_stats[2])
+          stats['total_consumers'] += int(ctl_stats[3])
 
-    if not stats['ctl_memory'] > 0:
+    if not stats['total_memory'] > 0:
         logger('warn', '%s reports 0 memory usage. This is probably incorrect.' % RABBITMQCTL_BIN)
 
     # get the pid of rabbitmq (beam.smp)
@@ -82,7 +87,7 @@ def get_stats():
         return None
         
     # Verbose output
-    logger('verb', '[rmqctl] Messages: %i, Memory: %i, Consumers: %i' % (stats['ctl_messages'], stats['ctl_memory'], stats['ctl_consumers']))
+    logger('verb', '[rmqctl] Messages: %i, Memory: %i, Consumers: %i' % (stats['total_messages'], stats['total_memory'], stats['total_consumers']))
     logger('verb', '[pmap] Mapped: %i, Used: %i, Shared: %i' % (stats['pmap_mapped'], stats['pmap_used'], stats['pmap_shared']))
 
     return stats
