@@ -50,18 +50,12 @@ def get_stats():
     if not stats['ctl_memory'] > 0:
         logger('warn', '%s reports 0 memory usage. This is probably incorrect.' % RABBITMQCTL_BIN)
 
-    # get the pid of rabbitmq (beam.smp)
+    # get the pid of rabbitmq
     try:
-        p = subprocess.Popen([PIDOF_BIN, 'beam.smp'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        with open(PID_FILE, 'r') as f:
+          pid = f.read().strip()
     except:
-        logger('err', 'Failed to run %s' % PIDOF_BIN)
-        return None
-
-    line = p.stdout.read().strip()
-    if not re.search('\D', line):
-        pid = line
-    else:
-        logger('err', '%s returned something strange.' % PIDOF_BIN)
+        logger('err', 'Unable to read %s' % PID_FILE)
         return None
 
     # use pmap to get proper memory stats
@@ -90,14 +84,14 @@ def get_stats():
 
 # Config data from collectd
 def configure_callback(conf):
-    global RABBITMQCTL_BIN, PMAP_BIN, PIDOF_BIN, VERBOSE_LOGGING
+    global RABBITMQCTL_BIN, PMAP_BIN, PID_FILE, VERBOSE_LOGGING
     for node in conf.children:
         if node.key == 'RmqcBin':
             RABBITMQCTL_BIN = node.values[0]
         elif node.key == 'PmapBin':
             PMAP_BIN = node.values[0]
-        elif node.key == 'PidofBin':
-            PIDOF_BIN = node.values[0]
+        elif node.key == 'PidFile':
+            PID_FILE = node.values[0]
         elif node.key == 'Verbose':
             VERBOSE_LOGGING = bool(node.values[0])
         else:

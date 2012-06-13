@@ -5,7 +5,7 @@ It will accept 4 options from the Collectd plugin configuration :
     Locations of binaries:
     RmqcBin = /usr/sbin/rabbitmqctl
     PmapBin = /usr/bin/pmap
-    PidofBin = /bin/pidof
+    PidFile = /var/run/rabbitmq/pid
 
     Logging:
     Verbose = False
