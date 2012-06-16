@@ -22,7 +22,10 @@ It will attempt to gather the following information:
     memory writeable/private (used)
     memory shared
 
-Props to Garret Heaton for inspiration and conceptual guidance from his redis-collectd-plugin.
-    https://github.com/powdahound/redis-collectd-plugin
+The script is licensed using the Apache License, Version 2.0 :
+http://www.apache.org/licenses/LICENSE-2.0
 
-Github pull requests welcome !
+I invite you to peruse the commit history for the list of contributors :
+https://github.com/phrawzty/rabbitmq-collectd-plugin/commits/master
+
+GitHub pull requests welcome !
