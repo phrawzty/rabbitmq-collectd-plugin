@@ -1,7 +1,7 @@
 # Name: rabbitmq-collectd-plugin - rabbitmq_info.py
 # Author: https://github.com/phrawzty/rabbitmq-collectd-plugin/commits/master
 # Description: This plugin uses Collectd's Python plugin to obtain RabbitMQ metrics.
-# 
+#
 # Copyright 2012 Daniel Maher
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,8 @@ RABBITMQCTL_BIN = '/usr/sbin/rabbitmqctl'
 PMAP_BIN = '/usr/bin/pmap'
 # Override in config by specifying 'PidofBin'.
 PIDOF_BIN = '/bin/pidof'
+# Override in config by specifying 'PidFile.
+PID_FILE = "/var/run/rabbitmq/pid"
 # Override in config by specifying 'Verbose'.
 VERBOSE_LOGGING = False
 
@@ -83,7 +85,7 @@ def get_stats():
     else:
         logger('warn', '%s returned something strange.' % PMAP_BIN)
         return None
-        
+
     # Verbose output
     logger('verb', '[rmqctl] Messages: %i, Memory: %i, Consumers: %i' % (stats['ctl_messages'], stats['ctl_memory'], stats['ctl_consumers']))
     logger('verb', '[pmap] Mapped: %i, Used: %i, Shared: %i' % (stats['pmap_mapped'], stats['pmap_used'], stats['pmap_shared']))
@@ -128,7 +130,7 @@ def read_callback():
         val.dispatch()
 
 
-# Send log messages (via collectd) 
+# Send log messages (via collectd)
 def logger(t, msg):
     if t == 'err':
         collectd.error('%s: %s' % (NAME, msg))
