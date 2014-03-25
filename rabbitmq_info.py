@@ -30,6 +30,8 @@ PMAP_BIN = '/usr/bin/pmap'
 PIDOF_BIN = '/bin/pidof'
 # Override in config by specifying 'PidFile.
 PID_FILE = "/var/run/rabbitmq/pid"
+# Override in config by specifying 'Vhost'.
+VHOST = "/"
 # Override in config by specifying 'Verbose'.
 VERBOSE_LOGGING = False
 
@@ -46,7 +48,7 @@ def get_stats():
 
     # call rabbitmqctl
     try:
-        p = subprocess.Popen([RABBITMQCTL_BIN, '-q', 'list_queues', 'messages', 'memory', 'consumers'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen([RABBITMQCTL_BIN, '-q', '-p', VHOST, 'list_queues', 'messages', 'memory', 'consumers'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     except:
         logger('err', 'Failed to run %s' % RABBITMQCTL_BIN)
         return None
@@ -95,7 +97,7 @@ def get_stats():
 
 # Config data from collectd
 def configure_callback(conf):
-    global RABBITMQCTL_BIN, PMAP_BIN, PID_FILE, VERBOSE_LOGGING
+    global RABBITMQCTL_BIN, PMAP_BIN, PID_FILE, VERBOSE_LOGGING, VHOST
     for node in conf.children:
         if node.key == 'RmqcBin':
             RABBITMQCTL_BIN = node.values[0]
@@ -105,6 +107,8 @@ def configure_callback(conf):
             PID_FILE = node.values[0]
         elif node.key == 'Verbose':
             VERBOSE_LOGGING = bool(node.values[0])
+        elif node.key == 'Vhost':
+            VHOST = node.values[0]
         else:
             logger('warn', 'Unknown config key: %s' % node.key)
 
