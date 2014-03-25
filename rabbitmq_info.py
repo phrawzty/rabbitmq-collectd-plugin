@@ -48,7 +48,9 @@ def get_stats():
 
     # call rabbitmqctl
     try:
-        p = subprocess.Popen([RABBITMQCTL_BIN, '-q', '-p', VHOST, 'list_queues', 'name', 'messages', 'memory', 'consumers'], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen([RABBITMQCTL_BIN, '-q', '-p', VHOST,
+            'list_queues', 'name', 'messages', 'memory', 'consumers'],
+            shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     except:
         logger('err', 'Failed to run %s' % RABBITMQCTL_BIN)
         return None
@@ -70,7 +72,8 @@ def get_stats():
         stats['ctl_consumers_%s' % queue_name] = ctl_stats[3]
 
     if not stats['ctl_memory'] > 0:
-        logger('warn', '%s reports 0 memory usage. This is probably incorrect.' % RABBITMQCTL_BIN)
+        logger('warn', '%s reports 0 memory usage. This is probably incorrect.'
+            % RABBITMQCTL_BIN)
 
     # get the pid of rabbitmq
     try:
@@ -82,7 +85,8 @@ def get_stats():
 
     # use pmap to get proper memory stats
     try:
-        p = subprocess.Popen([PMAP_BIN, '-d', pid], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen([PMAP_BIN, '-d', pid], shell=False,
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     except:
         logger('err', 'Failed to run %s' % PMAP_BIN)
         return None
@@ -98,8 +102,10 @@ def get_stats():
         return None
 
     # Verbose output
-    logger('verb', '[rmqctl] Messages: %i, Memory: %i, Consumers: %i' % (stats['ctl_messages'], stats['ctl_memory'], stats['ctl_consumers']))
-    logger('verb', '[pmap] Mapped: %i, Used: %i, Shared: %i' % (stats['pmap_mapped'], stats['pmap_used'], stats['pmap_shared']))
+    logger('verb', '[rmqctl] Messages: %i, Memory: %i, Consumers: %i' %
+        (stats['ctl_messages'], stats['ctl_memory'], stats['ctl_consumers']))
+    logger('verb', '[pmap] Mapped: %i, Used: %i, Shared: %i' %
+        (stats['pmap_mapped'], stats['pmap_used'], stats['pmap_shared']))
 
     return stats
 
